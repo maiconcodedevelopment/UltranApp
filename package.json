@@ -3,9 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mobiscroll/cli": "^1.0.0",
+    "input-moment": "^0.4.0",
+    "material-icons-react": "^1.0.4",
+    "mobiscroll-react": "^4.0.0",
+    "moment": "^2.24.0",
+    "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-infinite-calendar": "^2.3.1",
+    "react-scripts": "3.0.1",
+    "react-timekeeper": "^1.1.0",
+    "socket.io-client": "^2.2.0",
+    "websocket": "^1.0.29"
   },
   "scripts": {
     "start": "react-scripts start",

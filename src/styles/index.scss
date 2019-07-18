@@ -1,0 +1,49 @@
+.container{
+    display: flex;
+    justify-content: start;
+    align-items: stretch;
+    flex-direction: row;
+    
+}
+
+.content {
+    height: 100px;
+    flex : 1;
+    .content__header{
+        padding: 10px 20px 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    .title__day{
+        color: rgb(51, 51, 51);
+    }
+    .content__body{
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: column;
+        padding: 0px 20px 0px 20px;
+        .content__body__list{
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-direction: column;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+    }
+}
+
+//modal
+.modal__time{
+    margin: auto auto;
+}
+
+.modal__buttons{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}

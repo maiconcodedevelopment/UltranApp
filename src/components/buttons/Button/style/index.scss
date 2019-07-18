@@ -1,0 +1,16 @@
+.button{
+    width: 100px;
+    height: 30px;
+    background-color: rgb(68, 138, 255);
+    padding: 10px;
+    border-radius: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    .title{
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+    }
+}
