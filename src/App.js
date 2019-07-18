@@ -2,6 +2,8 @@ import React from 'react';
 import logo from './logo.svg';
 import { formatDateObject, getDateFormat } from "./helpers/Date";
 
+import NotificationUltran from "./helpers/Notification";
+
 import "./styles/index.scss"
 
 import { Button } from "./components/buttons/Button";
@@ -25,6 +27,24 @@ var height = window.innerHeight
 // var connection = new W3cwebsocket('ws://127.0.0.1:8000');
 var socketURL = "http://localhost:4000"
 
+function notifyMe() {
+  if (!("Notification" in window)) {
+    alert("Não é Suportado Notificatição para este App");
+  }
+
+  else if (Notification.permission === "granted") {
+    NotificationUltran("Seja Bem Vindo A Consultas",``)
+  }
+
+  else if (Notification.permission !== 'denied') {
+    Notification.requestPermission(function (permission) {
+      if (permission === "granted") {
+        NotificationUltran("Seja Bem Vindo A Consulta")
+      }
+    });
+  }
+}
+
 class App extends React.Component{
 
   constructor(){
@@ -42,8 +62,9 @@ class App extends React.Component{
       items : [],
     }
 
-    this.socket  = socketIO(socketURL)
+    notifyMe()
 
+    this.socket  = socketIO(socketURL)
   }
 
   componentWillMount(){
@@ -66,6 +87,8 @@ class App extends React.Component{
           title : "",
           description : ""
         },
+      },() => {
+         NotificationUltran("Inserido Nova Consulta",`Consulta Marcada para o dia ${data.date}`)
       })
     })
 
@@ -75,6 +98,8 @@ class App extends React.Component{
         let newItems = this.state.items.map(item => item.id === data.id ? data : item )
         this.setState({
           items : newItems
+        },() => {
+          NotificationUltran("Atualizado a Consulta",`Para o dia ${data.date}`)
         })
       }
     })
@@ -82,6 +107,8 @@ class App extends React.Component{
     this.socket.on("onDeleteConsultation",(data) => {
       this.setState({
         items : this.state.items.filter(item => item.id !== data.id )
+      },() => {
+        NotificationUltran("Deletado a Consulta",`Dia Deletado`)
       })
     })
   }
@@ -157,20 +184,46 @@ class App extends React.Component{
   onSave = (event) => {
     const { selectDay } = this.state
     console.log(this.state)
+    var data = { id : selectDay.id , date : selectDay.date , title: selectDay.title , description : selectDay.description ,  time : selectDay.time }
     if(!selectDay.title == "" && !selectDay.description == "" && selectDay.type == "save" ){
-       this.socket.emit("insertConsultation",{ date : selectDay.date , title: selectDay.title , description : selectDay.description ,  time : selectDay.time })
-       this.onOpenModal()
+       
+       this.socket.emit("insertConsultation",data)
+
+       this.state.items.push(data)
+       this.setState({
+         items : this.state.items,
+         selectDay : {
+           ...selectDay,
+           date : getDateFormat(today,"-"),
+           title : "",
+           description : ""
+         },
+       },() => {
+        this.onOpenModal()
+      })
     }
 
     if(!selectDay.title == "" && !selectDay.description == "" && selectDay.type == "edit" ){
-      this.socket.emit("updateConsultation",{ id : selectDay.id , date : selectDay.date , title: selectDay.title , description : selectDay.description ,  time : selectDay.time })
-      this.onOpenModal()
+      this.socket.emit("updateConsultation",data)
+      
+      let consultationUpdate = this.state.items.filter(item => item.id === data.id)
+      if(consultationUpdate.length > 0){
+        let newItems = this.state.items.map(item => item.id === data.id ? data : item )
+        this.setState({
+          items : newItems
+        },() => {
+          this.onOpenModal()
+        })
+      }
     }
     
   }
 
   onDelete = (item) => {
-     this.socket.emit("deleteConsultation",{ id : item.id })
+    this.socket.emit("deleteConsultation",{ id : item.id })
+    this.setState({
+      items : this.state.items.filter(consultation => consultation.id !== item.id )
+    })
   }
 
    render(){
