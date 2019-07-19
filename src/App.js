@@ -93,6 +93,7 @@ class App extends React.Component{
     })
 
     this.socket.on("onUpdateConsultation",(data) => {
+      console.log(data)
       let consultationUpdate = this.state.items.filter(item => item.id === data.id)
       if(consultationUpdate.length > 0){
         let newItems = this.state.items.map(item => item.id === data.id ? data : item )
@@ -105,11 +106,17 @@ class App extends React.Component{
     })
 
     this.socket.on("onDeleteConsultation",(data) => {
-      this.setState({
-        items : this.state.items.filter(item => item.id !== data.id )
-      },() => {
-        NotificationUltran("Deletado a Consulta",`Dia Deletado`)
-      })
+      console.log(data)
+
+      if(data.hasOwnProperty("id")){
+        let deleteConlta = this.state.items.filter(item => item.id !== data.id)
+        this.setState({
+          items : deleteConlta
+        },() => {
+          NotificationUltran("Deletado a Consulta",`Dia Deletado`)
+        })
+      }
+      
     })
   }
 
@@ -186,21 +193,8 @@ class App extends React.Component{
     console.log(this.state)
     var data = { id : selectDay.id , date : selectDay.date , title: selectDay.title , description : selectDay.description ,  time : selectDay.time }
     if(!selectDay.title == "" && !selectDay.description == "" && selectDay.type == "save" ){
-       
        this.socket.emit("insertConsultation",data)
-
-       this.state.items.push(data)
-       this.setState({
-         items : this.state.items,
-         selectDay : {
-           ...selectDay,
-           date : getDateFormat(today,"-"),
-           title : "",
-           description : ""
-         },
-       },() => {
-        this.onOpenModal()
-      })
+       this.onOpenModal()
     }
 
     if(!selectDay.title == "" && !selectDay.description == "" && selectDay.type == "edit" ){
